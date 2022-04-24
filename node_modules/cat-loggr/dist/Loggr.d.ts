@@ -1,0 +1,247 @@
+/// <reference types="node" />
+import { Chalk, ColorSupport } from 'chalk';
+import { WriteStream } from 'tty';
+export declare type Color = Chalk & {
+    supportsColor: ColorSupport;
+};
+export declare class ColorConfig {
+    text?: Color;
+    number?: Color;
+    error?: Color;
+}
+export declare class LoggrConfig {
+    shardId?: number | string;
+    shardLength?: number;
+    timestampFormat?: string;
+    level?: string;
+    levels?: LogLevel[];
+    meta?: LogMeta;
+    stdout?: WriteStream;
+    stderr?: WriteStream;
+    colors?: ColorConfig;
+    constructor({ shardId, shardLength, level, levels, meta, stdout, stderr, timestampFormat, colors }: LoggrConfig);
+}
+export declare class LogLevel {
+    name: string;
+    color: Color;
+    colors?: ColorConfig;
+    err: boolean;
+    trace: boolean;
+    aliases: string[];
+    position?: number;
+    constructor(name: string, color: Chalk & {
+        supportsColor: ColorSupport;
+    });
+    setError(err?: boolean): LogLevel;
+    setTrace(trace?: boolean): LogLevel;
+    setAliases(...aliases: string[]): LogLevel;
+    setColors(colors: ColorConfig): LogLevel;
+}
+/**
+ * @typedef {Object} LogMeta
+ * @property {number} [metaObject.depth=1] The depth of objects to inspect
+ * @property {boolean} [metaObject.color=true] Whether to display colors
+ * @property {boolean} [metaObject.trace=false] Whether to generate a stacktrace
+ */
+export declare class LogMeta {
+    depth?: number;
+    color?: boolean;
+    trace?: boolean;
+    shardId?: string | number;
+    quote?: boolean;
+    context?: object;
+    constructor({ depth, color, trace, shardId, quote, context }: LogMeta);
+}
+/**
+ * An argument hook callback function
+ *
+ * @callback ArgHookCallback
+ * @param {Object} params The params that are sent by the hook
+ * @param {*} [params.arg] The provided argument
+ * @param {Date} params.date The timestamp of execution
+ * @returns {string|null} The processed argument result, or `null` to continue executing
+ */
+export declare type ArgHookCallback = (params: {
+    arg?: any;
+    date: Date;
+}) => string | null;
+/**
+ * A post hook callback function
+ *
+ * @callback PostHookCallback
+ * @param {Object} params The params that are sent by the hook
+ * @param {string} params.level The level of the log
+ * @param {boolean} params.error A flag signifying that the log is an error
+ * @param {string} params.text The final formatted text
+ * @param {Date} params.date The timestamp of execution
+ * @param {string} params.timestamp The formatted timestamp
+ * @param {string} [params.shard] The shard ID
+ * @param {object} [params.context] Context passed through meta info
+ * @param {LogMeta} [params.meta] Raw meta info
+ * @returns {string|null} The processed result, or `null` to continue executing
+ */
+export declare type PostHookCallback = (params: {
+    level: string;
+    error: boolean;
+    text: string;
+    date: Date;
+    timestamp: string;
+    shard?: string;
+    context?: Object;
+    meta: LogMeta;
+}) => string | null;
+/**
+ * A post hook callback function
+ *
+ * @callback PreHookCallback
+ * @param {Object} params The params that are sent by the hook
+ * @param {string} params.level The level of the log
+ * @param {boolean} params.error A flag signifying that the log is an error
+ * @param {any[]} params.args The args being logged
+ * @param {Date} params.date The timestamp of execution
+ * @param {string} params.timestamp The formatted timestamp
+ * @param {string} [params.shard] The shard ID
+ * @param {object} [params.context] Context passed through meta info
+ * @param {LogMeta} [params.meta] Raw meta info
+ * @returns {string|null} The processed result, or `null` to continue executing
+ */
+export declare type PreHookCallback = (params: {
+    level: string;
+    error: boolean;
+    args: any[];
+    date: Date;
+    timestamp: string;
+    shard?: string;
+    context?: Object;
+    meta: LogMeta;
+}) => string | null;
+export declare class LogHooks {
+    pre: PreHookCallback[];
+    arg: ArgHookCallback[];
+    post: PostHookCallback[];
+}
+/**
+ * Class containing logging functionality
+ */
+export default class CatLoggr {
+    static get DefaultLevels(): LogLevel[];
+    private _config;
+    private _shard;
+    private _shardLength;
+    private _levelName;
+    private _levels;
+    private _levelMap;
+    private _meta;
+    private _defaultMeta;
+    private _stdout;
+    private _stderr;
+    private _maxLength;
+    private _hooks;
+    [key: string]: any;
+    /**
+     * Creates an instance of the logger.
+     * @param {LoggrConfig} [options] Configuration options
+     * @param {string|number} [options.shardId] The shard ID that the logger is on
+     * @param {string|number} [options.shardLength=4] The maximum number of characters that a shard can be
+     * @param {string} [options.level=info] The default log threshold
+     * @param {level[]} [options.levels] Custom level definitions
+     * @param {metaObject} [options.meta] The default meta configuration
+     * @param {WriteStream} [options.stdout] The output stream to use for general logs
+     * @param {WriteStream} [options.stderr] The output stream to use for error logs
+     */
+    constructor(config?: LoggrConfig);
+    /**
+     * A helper reference to the chalk library
+     */
+    static get _chalk(): Chalk;
+    /**
+     * Adds a pre-hook
+     * @param {ArgHookCallback} func The hook callback
+     * @returns {CatLoggr} Self for chaining
+     */
+    addPreHook(func: ArgHookCallback): this;
+    /**
+     * Adds an arg-hook
+     * @param {ArgHookCallback} func The hook callback
+     * @returns {CatLoggr} Self for chaining
+     */
+    addArgHook(func: ArgHookCallback): this;
+    /**
+     * Adds a post-hook
+     * @param {PostHookCallback} func
+     * @returns {CatLoggr} Self for chaining
+     */
+    addPostHook(func: PostHookCallback): this;
+    /**
+     * Sets the default meta object to use for all logs.
+     * @param {metaObject?} meta The default meta object to use
+     * @returns {CatLoggr?} Self for chaining
+     */
+    setDefaultMeta(meta: LogMeta): this;
+    /**
+     * Sets the level threshold. Only logs on and above the threshold will be output.
+     * @param {string} level The level threshold
+     * @returns {CatLoggr} Self for chaining
+     */
+    setLevel(level: string): this;
+    /**
+     * @typedef level
+     * @property {string} level.name The name of the level
+     * @property {Object} level.color The color of the level (using chalk)
+     * @property {string[]} level.aliases The alternate names that can be used to invoke the level
+     * @property {boolean} level.err A flag signifying that the level writes to stderr
+     * @property {boolean} level.trace A flag signifying that the level should generate a stacktrace
+     */
+    /**
+     * Overwrites the currently set levels with a custom set.
+     * @param {level[]} levels An array of levels, in order from high priority to low priority
+     * @returns {CatLoggr} Self for chaining
+     */
+    setLevels(levels: LogLevel[]): this;
+    /**
+     * Registers CatLoggr as the global `console` property.
+     * @returns {CatLoggr} Self for chaining
+     */
+    setGlobal(): this;
+    get _level(): LogLevel;
+    get _timestamp(): {
+        raw: Date;
+        formatted: string;
+        formattedRaw: string;
+    };
+    /**
+     * Center aligns text.
+     * @param {string} text The text to align
+     * @param {number} length The length that it should be padded to
+     * @returns {string} The padded text
+     */
+    _centrePad(text: string, length: number): string;
+    /**
+     * Writes the log to the proper stream.
+     * @param {Level} level The level of the log
+     * @param {string} text The text to write
+     * @param {boolean} err A flag signifying whether to write to stderr
+     * @param {Object} [timestamp] An optional timestamp to use
+     * @param {string} timestamp.formatted The formatted timestamp
+     * @param {Date} timestamp.raw The raw timestamp
+     * @returns {CatLoggr} Self for chaining
+     */
+    _write(level: LogLevel, text: string, err?: boolean, timestamp?: {
+        formatted: string;
+        raw: Date;
+        formattedRaw: string;
+    }): this;
+    /**
+     * Sets the meta for the next log.
+     * @param {metaObject} meta - The meta object to set
+     * @returns {CatLoggr} Self for chaining
+     */
+    meta(meta?: {}): this;
+    /**
+     * Formats logs in preparation for writing.
+     * @param {string} level The level of the log
+     * @param {*} args The args that were directly passed to the function
+     * @returns {CatLoggr} Self for chaining
+     */
+    _format(level: LogLevel, ...args: any[]): this;
+}

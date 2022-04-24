@@ -1,0 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Loggr_1 = require("./Loggr");
+module.exports = Loggr_1.default;
+//# sourceMappingURL=index.js.map

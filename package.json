@@ -1,0 +1,43 @@
+{
+  "name": "windymusic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/bot.js",
+    "start": "node ./src/bot.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.4.0",
+    "@ksoft/api": "^3.1.9",
+    "algoliasearch": "^4.9.0",
+    "audit": "^0.0.6",
+    "bufferutil": "^4.0.6",
+    "cat-loggr": "^1.2.2",
+    "colon-notation": "^1.2.1",
+    "discord.js": "^12.5.3",
+    "distube": "^2.8.18",
+    "dotenv": "^8.2.0",
+    "erlpack": "^0.1.4",
+    "ffmpeg-static": "^4.3.0",
+    "firebase": "^8.4.1",
+    "fix": "^0.0.6",
+    "fs": "0.0.1-security",
+    "genius-lyrics-api": "^3.2.0",
+    "node-fetch": "^2.6.7",
+    "parseint": "^1.0.1",
+    "promise-retry": "^2.0.1",
+    "quick.db": "^7.1.3",
+    "radio": "^0.2.0",
+    "request": "^2.88.2",
+    "spotify-url-info": "^2.2.5",
+    "string-progressbar": "^1.0.4",
+    "utf-8-validate": "^5.0.8",
+    "ytdl-core": "^4.11.0",
+    "zlib-sync": "^0.1.7"
+  }
+}
