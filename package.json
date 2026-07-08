@@ -23,12 +23,16 @@
     "@discordjs/voice": "^0.19.0",
     "@distube/soundcloud": "^2.0.0",
     "@distube/spotify": "^2.0.0",
-    "@distube/youtube": "^1.0.0",
+    "@distube/youtube": "latest",
+    "@distube/ytdl-core": "latest",
     "discord.js": "^14.25.1",
-    "distube": "^5.2.3",
+    "distube": "latest",
     "dotenv": "^17.2.3",
     "ffmpeg-static": "^5.2.0",
     "opusscript": "^0.1.1"
+  },
+  "overrides": {
+    "@distube/ytdl-core": "latest"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
