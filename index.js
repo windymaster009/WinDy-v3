@@ -4,6 +4,7 @@ const { Client, GatewayIntentBits, EmbedBuilder, ActivityType } = require("disco
 const { DisTube, Events } = require("distube");
 const { YouTubePlugin } = require("@distube/youtube");
 const { SpotifyPlugin } = require("@distube/spotify");
+const ffmpegPath = require("ffmpeg-static");
 
 const soundCloudModule = require("@distube/soundcloud");
 const SoundCloudPlugin = soundCloudModule.default ?? soundCloudModule.SoundCloudPlugin ?? soundCloudModule;
@@ -30,6 +31,9 @@ const distube = new DisTube(client, {
   emitNewSongOnly: true,
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
+  ffmpeg: {
+    path: ffmpegPath || "ffmpeg",
+  },
   plugins: [
     new YouTubePlugin(),
     new SpotifyPlugin(),
@@ -37,8 +41,9 @@ const distube = new DisTube(client, {
   ],
 });
 
-client.once("ready", () => {
+client.once("clientReady", () => {
   console.log(`${client.user.tag} is online.`);
+  console.log(`Using FFmpeg: ${ffmpegPath || "system ffmpeg"}`);
   client.user.setActivity(`${PREFIX}help | DisTube v5`, { type: ActivityType.Listening });
 });
 
